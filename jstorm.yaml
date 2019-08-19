@@ -1,0 +1,113 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+
+metadata:
+  name: jstorm-nimbus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: jstorm-nimbus
+    spec:
+      imagePullSecrets:
+          - name: nexus-secret
+      containers:
+      - name: jstorm-nimbus
+        image: mtunique/jstorm
+        imagePullPolicy: IfNotPresent
+        command: ["jstorm","nimbus"]
+        volumeMounts:
+        - name: zk-v
+          mountPath: /opt/jstorm/conf/storm.yaml
+        - name: logs-conf-v
+          mountPath: /opt/jstorm/conf/jstorm.logback.xml
+        - name: jar-v
+          mountPath: /opt/jstorm/lib
+        - name: logs-v
+          mountPath: /opt/jstorm/logs
+      volumes:
+      - name: zk-v
+        hostPath:
+         path: /opt/jstorm/conf/storm.yaml
+      - name: logs-conf-v
+        hostPath:
+         path: /opt/jstorm/conf/jstorm.logback.xml
+      - name: jar-v
+        persistentVolumeClaim:
+          claimName: jstorm-jar-pvc
+      - name: logs-v
+        hostPath: 
+         path: /opt/logs/jstorm
+        
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+
+metadata:
+  name: jstorm-supervisor
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: jstorm-supervisor
+    spec:
+      imagePullSecrets:
+          - name: nexus-secret
+      containers:
+      - name: jstorm-supervisor
+        image: mtunique/jstorm
+        imagePullPolicy: IfNotPresent
+        command: ["jstorm","supervisor"]
+        volumeMounts:
+        - name: zk-v
+          mountPath: /opt/jstorm/conf/storm.yaml
+        - name: logs-conf-v
+          mountPath: /opt/jstorm/conf/jstorm.logback.xml
+        - name: jar-v
+          mountPath: /opt/jstorm/lib
+        - name: logs-v
+          mountPath: /opt/jstorm/logs
+      volumes:
+      - name: zk-v
+        hostPath:
+         path: /opt/jstorm/conf/storm.yaml
+      - name: logs-conf-v
+        hostPath:
+         path: /opt/jstorm/conf/jstorm.logback.xml
+      - name: jar-v
+        persistentVolumeClaim:
+          claimName: jstorm-jar-pvc
+      - name: logs-v
+        hostPath:
+         path: /opt/logs/jstorm
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jstorm-nimbus
+spec:
+  type: NodePort
+  ports:
+    - port: 6627
+      targetPort: 6627
+      nodePort: 6627
+  selector:
+     app: jstorm-nimbus
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jstorm-supervisor
+spec:
+  ports:
+    - port: 6627
+      targetPort: 6627
+  selector:
+     app: jstorm-supervisor
