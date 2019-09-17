@@ -22,20 +22,8 @@ RUN apt-get update && \
     chmod +x "$JSTORM_HOME/bin/jstorm" && \
     rm "$JSTORM_INSTALL_PATH/$JSTORM_FILE"
 
-<<<<<<< HEAD
 copy  conf/jstorm.logback.xml /opt/jstorm/conf/
 copy  conf/storm.yaml /opt/jstorm/conf/
 
 WORKDIR $JSTORM_HOME
-=======
-env TZ=Asia/Shanghai
 
-
-copy  conf/jstorm.logback.xml /opt/jstorm/conf/
-copy  conf/storm.yaml /opt/jstorm/conf/
-
-
-copy start.sh /opt/jstorm/
-
-run  chmod +x /opt/jstorm/start.sh
->>>>>>> b5bd2273877f2b15714cb3b9406878c3d4d46f40
