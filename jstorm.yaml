@@ -58,7 +58,7 @@ spec:
           - name: nexus-secret
       containers:
       - name: jstorm-supervisor
-        image: 192.168.0.134:9990/jstorm-base/jstorm-caiex:latest
+        image: 192.168.0.134:9990/jstorm/jstorm-caiex:latest
         imagePullPolicy: Always
         command: ["jstorm","supervisor"]
         volumeMounts:
