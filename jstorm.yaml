@@ -14,32 +14,31 @@ spec:
           - name: nexus-secret
       containers:
       - name: jstorm-nimbus
-        image: mtunique/jstorm
-        imagePullPolicy: IfNotPresent
+        image: 192.168.0.134:9990/jstorm/jstorm-caiex:latest
+        imagePullPolicy: Always
         command: ["jstorm","nimbus"]
         volumeMounts:
-        - name: zk-v
-          mountPath: /opt/jstorm/conf/storm.yaml
-        - name: logs-conf-v
-          mountPath: /opt/jstorm/conf/jstorm.logback.xml
-        - name: jar-v
-          mountPath: /opt/jstorm/lib
         - name: logs-v
           mountPath: /opt/jstorm/logs
+        - name: logs-trade
+          mountPath: /opt/logs/trade
+        - name: trade-v
+          mountPath: /opt/jstorm/trade
+        - name: jar
+          mountPath: /opt/jstorm/lib
       volumes:
-      - name: zk-v
-        hostPath:
-         path: /opt/jstorm/conf/storm.yaml
-      - name: logs-conf-v
-        hostPath:
-         path: /opt/jstorm/conf/jstorm.logback.xml
-      - name: jar-v
-        persistentVolumeClaim:
-          claimName: jstorm-jar-pvc
       - name: logs-v
         hostPath: 
          path: /opt/logs/jstorm
-        
+      - name: logs-trade
+        hostPath: 
+         path: /opt/logs/jstorm/trade
+      - name: trade-v
+        persistentVolumeClaim:
+          claimName: jstorm-trade-pvc
+      - name: jar
+        persistentVolumeClaim:
+          claimName: jstorm-nimbus-jar-pvc
 
 ---
 
@@ -59,31 +58,31 @@ spec:
           - name: nexus-secret
       containers:
       - name: jstorm-supervisor
-        image: mtunique/jstorm
-        imagePullPolicy: IfNotPresent
+        image: 192.168.0.134:9990/jstorm-base/jstorm-caiex:latest
+        imagePullPolicy: Always
         command: ["jstorm","supervisor"]
         volumeMounts:
-        - name: zk-v
-          mountPath: /opt/jstorm/conf/storm.yaml
-        - name: logs-conf-v
-          mountPath: /opt/jstorm/conf/jstorm.logback.xml
-        - name: jar-v
-          mountPath: /opt/jstorm/lib
         - name: logs-v
           mountPath: /opt/jstorm/logs
+        - name: logs-trade
+          mountPath: /opt/logs/trade
+        - name: trade-v
+          mountPath: /opt/jstorm/trade
+        - name: jar
+          mountPath: /opt/jstorm/lib
       volumes:
-      - name: zk-v
-        hostPath:
-         path: /opt/jstorm/conf/storm.yaml
-      - name: logs-conf-v
-        hostPath:
-         path: /opt/jstorm/conf/jstorm.logback.xml
-      - name: jar-v
-        persistentVolumeClaim:
-          claimName: jstorm-jar-pvc
       - name: logs-v
         hostPath:
          path: /opt/logs/jstorm
+      - name: logs-trade
+        hostPath:  
+         path: /opt/logs/jstorm/trade
+      - name: trade-v
+        persistentVolumeClaim:
+          claimName: jstorm-trade-pvc
+      - name: jar
+        persistentVolumeClaim:
+          claimName: jstorm-supervisor-jar-pvc
 ---
 
 apiVersion: v1
@@ -91,11 +90,9 @@ kind: Service
 metadata:
   name: jstorm-nimbus
 spec:
-  type: NodePort
   ports:
     - port: 6627
       targetPort: 6627
-      nodePort: 6627
   selector:
      app: jstorm-nimbus
 

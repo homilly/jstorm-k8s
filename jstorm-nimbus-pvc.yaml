@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: jstorm-nimbus-jar-pv
+spec:
+  capacity:
+    storage: 0.5Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: "/opt/jstorm/nimbus/lib"
+    server: 192.168.0.132
+  persistentVolumeReclaimPolicy: Recycle
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jstorm-nimbus-jar-pvc
+  labels:
+    type: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi

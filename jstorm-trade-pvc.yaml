@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: jstorm-trade-pv
+spec:
+  capacity:
+    storage: 0.5Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: "/opt/jstorm/trade/"
+    server: 192.168.0.132
+  persistentVolumeReclaimPolicy: Recycle
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jstorm-trade-pvc
+  labels:
+    type: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
